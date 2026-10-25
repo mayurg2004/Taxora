@@ -1,6 +1,6 @@
 // ============================================================================
 // TASKORA BACKEND SERVER ENTRY POINT
-// Boots database connection, runs initial development seed, and listens on port
+// Boots the database connection and listens on the configured port
 // ============================================================================
 
 import dotenv from 'dotenv';
@@ -8,7 +8,6 @@ dotenv.config();
 
 import app from './app.js';
 import { connectDB } from './config/db.js';
-import { seedDatabase } from './utils/seedData.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -17,10 +16,7 @@ async function startServer() {
     // 1. Connect to MongoDB
     await connectDB();
 
-    // 2. Run idempotent database seeding
-    await seedDatabase();
-
-    // 3. Start Express HTTP Server
+    // 2. Start Express HTTP Server
     const server = app.listen(PORT, () => {
       console.log(`====================================================`);
       console.log(`🚀 Taskora Backend REST API running on port ${PORT}`);

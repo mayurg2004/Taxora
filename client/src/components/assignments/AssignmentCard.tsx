@@ -87,7 +87,7 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
                     onClick={() => setMenuOpen(false)}
                   >
                     <Eye size={14} />
-                    <span>View Details</span>
+                    <span>View task</span>
                   </Link>
 
                   <Link
@@ -97,7 +97,7 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
                     onClick={() => setMenuOpen(false)}
                   >
                     <Edit2 size={14} />
-                    <span>Edit</span>
+                    <span>Edit task</span>
                   </Link>
 
                   <button
@@ -186,10 +186,10 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
             fontSize: '0.75rem',
             color: assignment.status === 'Completed' ? '#047857' : 'var(--text-muted)',
           }}
-          title={assignment.status === 'Completed' ? 'Mark as Pending' : 'Mark as Completed'}
+          title={assignment.status === 'Completed' ? 'Reopen task' : 'Mark task done'}
         >
           <CheckCircle2 size={14} color={assignment.status === 'Completed' ? '#10b981' : 'currentColor'} />
-          <span>{assignment.status === 'Completed' ? 'Done' : 'Complete'}</span>
+          <span>{assignment.status === 'Completed' ? 'Done' : 'Mark done'}</span>
         </button>
       </div>
     </div>

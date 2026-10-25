@@ -12,14 +12,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   // Determine current page title from pathname
   const getPageInfo = () => {
     const path = location.pathname;
-    if (path === '/') return { title: 'Dashboard', subtitle: 'Academic Overview & Metrics' };
-    if (path === '/assignments') return { title: 'Assignments', subtitle: 'Manage & Track Coursework' };
-    if (path === '/assignments/new') return { title: 'Add Assignment', subtitle: 'Record New Coursework' };
-    if (path.startsWith('/assignments/') && path.endsWith('/edit')) return { title: 'Edit Assignment', subtitle: 'Update Assignment Details' };
-    if (path.startsWith('/assignments/')) return { title: 'Assignment Details', subtitle: 'Full Assignment Information' };
-    if (path === '/subjects') return { title: 'Subjects', subtitle: 'Manage Academic Subjects' };
-    if (path === '/settings') return { title: 'Settings', subtitle: 'Account & Application Info' };
-    return { title: 'Taskora', subtitle: 'Student Assignment Tracker' };
+    if (path === '/') return { title: 'Today', subtitle: 'Your personal task overview' };
+    if (path === '/assignments') return { title: 'My tasks', subtitle: 'Plan and track your to-dos' };
+    if (path === '/assignments/new') return { title: 'New task', subtitle: 'Add something to your day' };
+    if (path.startsWith('/assignments/') && path.endsWith('/edit')) return { title: 'Edit task', subtitle: 'Update task details' };
+    if (path.startsWith('/assignments/')) return { title: 'Task details', subtitle: 'Your task information' };
+    if (path === '/settings') return { title: 'Your account', subtitle: 'Profile and application details' };
+    return { title: 'Taskora', subtitle: 'Personal task planner' };
   };
 
   const { title, subtitle } = getPageInfo();
@@ -68,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         {location.pathname !== '/assignments/new' && (
           <Link to="/assignments/new" className="btn btn-primary btn-sm">
             <Plus size={15} />
-            <span>New Assignment</span>
+            <span>New task</span>
           </Link>
         )}
       </div>

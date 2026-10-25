@@ -7,6 +7,11 @@ import mongoose from 'mongoose';
 
 const assignmentSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
     title: {
       type: String,
       required: [true, 'Assignment title is required'],

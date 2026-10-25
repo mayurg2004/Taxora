@@ -13,7 +13,6 @@ import { AssignmentsPage } from './pages/AssignmentsPage';
 import { AddAssignmentPage } from './pages/AddAssignmentPage';
 import { EditAssignmentPage } from './pages/EditAssignmentPage';
 import { AssignmentDetailsPage } from './pages/AssignmentDetailsPage';
-import { SubjectsPage } from './pages/SubjectsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 // Protected Route Guard
@@ -133,17 +132,6 @@ export const App: React.FC = () => {
               <ProtectedRoute>
                 <DashboardLayout>
                   <EditAssignmentPage />
-                </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/subjects"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <SubjectsPage />
                 </DashboardLayout>
               </ProtectedRoute>
             }

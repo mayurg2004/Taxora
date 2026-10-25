@@ -55,7 +55,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         onChange={(e) => onSubjectChange(e.target.value)}
         style={{ width: 'auto', minWidth: '140px', fontSize: '0.85rem', padding: '0.45rem 0.75rem' }}
       >
-        <option value="all">All Subjects</option>
+        <option value="all">All categories</option>
         {subjects.map((sub) => (
           <option key={sub._id} value={sub.name}>
             {sub.name}
@@ -70,7 +70,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         onChange={(e) => onStatusChange(e.target.value)}
         style={{ width: 'auto', minWidth: '130px', fontSize: '0.85rem', padding: '0.45rem 0.75rem' }}
       >
-        <option value="all">All Statuses</option>
+        <option value="all">All task states</option>
         <option value="Pending">Pending</option>
         <option value="In Progress">In Progress</option>
         <option value="Completed">Completed</option>

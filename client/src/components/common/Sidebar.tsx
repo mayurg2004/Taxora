@@ -4,10 +4,8 @@ import {
   LayoutDashboard, 
   CheckSquare, 
   PlusCircle, 
-  BookOpen, 
   Settings, 
   LogOut,
-  GraduationCap
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -38,11 +36,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="brand-icon">
-            <GraduationCap size={20} />
+            <CheckSquare size={20} />
           </div>
           <div>
             <div className="brand-name">Taskora</div>
-            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Assignment Tracker</div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Personal task planner</div>
           </div>
           <span className="brand-tag">v1.0</span>
         </div>
@@ -59,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick
             <span>Dashboard</span>
           </NavLink>
 
-          <span className="nav-heading" style={{ marginTop: '0.75rem' }}>Management</span>
+          <span className="nav-heading" style={{ marginTop: '0.75rem' }}>Your day</span>
           <NavLink
             to="/assignments"
             end
@@ -67,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
             <CheckSquare size={18} />
-            <span>All Assignments</span>
+            <span>My tasks</span>
           </NavLink>
 
           <NavLink
@@ -76,19 +74,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
             <PlusCircle size={18} />
-            <span>Add Assignment</span>
+            <span>New task</span>
           </NavLink>
 
-          <NavLink
-            to="/subjects"
-            onClick={onClose}
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          >
-            <BookOpen size={18} />
-            <span>Subjects</span>
-          </NavLink>
-
-          <span className="nav-heading" style={{ marginTop: '0.75rem' }}>System</span>
+          <span className="nav-heading" style={{ marginTop: '0.75rem' }}>Account</span>
           <NavLink
             to="/settings"
             onClick={onClose}
@@ -105,8 +94,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogoutClick
               {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
             </div>
             <div className="user-details">
-              <div className="user-name">{user?.name || 'Administrator'}</div>
-              <div className="user-role">{user?.email || 'admin@taskora.local'}</div>
+              <div className="user-name">{user?.name || 'Your account'}</div>
+              <div className="user-role">{user?.email || ''}</div>
             </div>
           </div>
 

@@ -33,8 +33,8 @@ export const SettingsPage: React.FC = () => {
               <User size={20} />
             </div>
             <div>
-              <h2 className="card-title">Administrator Profile</h2>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Authenticated User Information</span>
+              <h2 className="card-title">Your profile</h2>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Account information</span>
             </div>
           </div>
           <span className="badge badge-completed" style={{ fontSize: '0.75rem' }}>
@@ -78,7 +78,7 @@ export const SettingsPage: React.FC = () => {
               Access Role
             </span>
             <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--primary-600)', marginTop: '2px' }}>
-              {user?.role === 'admin' ? 'System Administrator' : 'Student'}
+              Personal account
             </div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export const SettingsPage: React.FC = () => {
 
         <div style={{ marginTop: '1.25rem', padding: '0.75rem 1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <CheckCircle size={16} />
-          <span>All academic assignment and subject management routes are secured with JWT bearer verification.</span>
+          <span>Your task list is private to your account and protected by sign-in.</span>
         </div>
       </div>
 

@@ -100,7 +100,7 @@ export const AssignmentDetailsPage: React.FC = () => {
           className="btn btn-ghost btn-sm"
         >
           <ArrowLeft size={16} />
-          <span>All Assignments</span>
+            <span>My tasks</span>
         </button>
 
         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -109,7 +109,7 @@ export const AssignmentDetailsPage: React.FC = () => {
             className={`btn btn-sm ${assignment.status === 'Completed' ? 'btn-secondary' : 'btn-primary'}`}
           >
             <CheckCircle2 size={15} />
-            <span>{assignment.status === 'Completed' ? 'Mark as Pending' : 'Mark as Completed'}</span>
+            <span>{assignment.status === 'Completed' ? 'Reopen task' : 'Mark done'}</span>
           </button>
 
           <Link
@@ -135,7 +135,7 @@ export const AssignmentDetailsPage: React.FC = () => {
         <div className="alert alert-danger" style={{ marginBottom: '1.25rem' }}>
           <AlertCircle size={20} />
           <div>
-            <strong>This assignment is overdue!</strong> It passed the deadline on {formatDate(assignment.dueDate)}.
+            <strong>This task is overdue.</strong> It was due {formatDate(assignment.dueDate)}.
           </div>
         </div>
       )}
@@ -172,7 +172,7 @@ export const AssignmentDetailsPage: React.FC = () => {
         >
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '0.25rem' }}>
-              Due Date
+              Due date and time
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, color: overdue ? '#dc2626' : 'var(--text-main)', fontSize: '0.95rem' }}>
               <Calendar size={16} />
@@ -207,7 +207,7 @@ export const AssignmentDetailsPage: React.FC = () => {
         <div>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.65rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <FileText size={16} />
-            <span>Assignment Requirements & Notes</span>
+          <span>Task notes</span>
           </h3>
 
           {assignment.description ? (
@@ -227,7 +227,7 @@ export const AssignmentDetailsPage: React.FC = () => {
             </div>
           ) : (
             <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', fontStyle: 'italic' }}>
-              No detailed instructions or requirements were provided for this assignment.
+              No notes added to this task.
             </p>
           )}
         </div>
@@ -236,7 +236,7 @@ export const AssignmentDetailsPage: React.FC = () => {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={isDeleteDialogOpen}
-        title="Delete Assignment"
+        title="Delete task"
         message={`Are you sure you want to permanently delete "${assignment.title}"? This cannot be undone.`}
         confirmLabel="Yes, Delete"
         isDanger={true}

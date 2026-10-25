@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Assignment, Subject } from '../types';
-import { assignmentsApi, subjectsApi } from '../services/api';
+import { assignmentsApi } from '../services/api';
 import { AssignmentCard } from '../components/assignments/AssignmentCard';
 import { SearchBar } from '../components/assignments/SearchBar';
 import { FilterPanel } from '../components/assignments/FilterPanel';
@@ -47,12 +47,9 @@ export const AssignmentsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [assignRes, subRes] = await Promise.all([
-        assignmentsApi.getAll(),
-        subjectsApi.getAll(),
-      ]);
+      const assignRes = await assignmentsApi.getAll();
       setAssignments(assignRes.assignments);
-      setSubjects(subRes.subjects);
+      setSubjects([...new Set(assignRes.assignments.map((item) => item.subject))].map((name) => ({ _id: name, name })));
     } catch (err: any) {
       setError(err.message || 'Failed to load assignments.');
     } finally {
@@ -233,7 +230,7 @@ export const AssignmentsPage: React.FC = () => {
 
           <Link to="/assignments/new" className="btn btn-primary">
             <Plus size={16} />
-            <span>Add Assignment</span>
+            <span>New task</span>
           </Link>
         </div>
       </div>
@@ -256,7 +253,7 @@ export const AssignmentsPage: React.FC = () => {
       {/* Results Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
         <span>
-          Showing <strong>{filteredAssignments.length}</strong> of <strong>{assignments.length}</strong> assignments
+          Showing <strong>{filteredAssignments.length}</strong> of <strong>{assignments.length}</strong> tasks
         </span>
       </div>
 
@@ -267,17 +264,17 @@ export const AssignmentsPage: React.FC = () => {
             <CheckSquare size={28} />
           </div>
           <h3 className="empty-state-title">
-            {assignments.length === 0 ? 'No assignments created yet' : 'No matching assignments found'}
+            {assignments.length === 0 ? 'No tasks on your list yet' : 'No matching tasks found'}
           </h3>
           <p className="empty-state-desc">
             {assignments.length === 0
-              ? 'Get started by creating your first assignment deadline for your subjects.'
+              ? 'Add a task with a due date and time to start planning.'
               : 'Try adjusting your search criteria or clearing selected status and priority filters.'}
           </p>
           {assignments.length === 0 ? (
             <Link to="/assignments/new" className="btn btn-primary">
               <Plus size={16} />
-              <span>Create Assignment</span>
+              <span>Create a task</span>
             </Link>
           ) : (
             <button onClick={handleClearFilters} className="btn btn-secondary">
@@ -389,7 +386,7 @@ export const AssignmentsPage: React.FC = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}
-        title="Delete Assignment"
+        title="Delete task"
         message={`Are you sure you want to permanently delete "${deleteDialog.title}"? This action cannot be undone.`}
         confirmLabel="Delete Permanently"
         isDanger={true}

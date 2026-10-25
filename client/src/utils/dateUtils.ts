@@ -24,7 +24,7 @@ export function formatDate(dateString: string): string {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  }) + ' · ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
 /**
@@ -34,7 +34,8 @@ export function formatDate(dateString: string): string {
 export function toInputDateFormat(dateString: string): string {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toISOString().split('T')[0];
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
 }
 
 /**
@@ -49,24 +50,23 @@ export function getRelativeDeadline(dueDateString: string, status: string): { te
   const now = new Date();
   const due = new Date(dueDateString);
   
-  // Strip time for clean day comparison
-  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dueDateOnly = new Date(due.getFullYear(), due.getMonth(), due.getDate());
-  
-  const diffTime = dueDateOnly.getTime() - todayDate.getTime();
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = due.getTime() - now.getTime();
+  const diffDays = Math.ceil(Math.abs(diffTime) / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) {
-    const daysAgo = Math.abs(diffDays);
+  if (diffTime < 0) {
+    const hoursAgo = Math.max(1, Math.floor(Math.abs(diffTime) / (1000 * 60 * 60)));
     return {
-      text: daysAgo === 1 ? 'Overdue by 1 day' : `Overdue by ${daysAgo} days`,
+      text: hoursAgo < 24 ? `Overdue by ${hoursAgo}h` : `Overdue by ${diffDays}d`,
       isOverdue: true,
     };
-  } else if (diffDays === 0) {
+  } else if (diffDays === 1 && due.toDateString() === now.toDateString()) {
+    const minutes = Math.max(1, Math.floor(diffTime / 60000));
+    return { text: minutes < 60 ? `Due in ${minutes}m` : `Due in ${Math.floor(minutes / 60)}h`, isOverdue: false };
+  } else if (due.toDateString() === now.toDateString()) {
     return { text: 'Due today', isOverdue: false };
   } else if (diffDays === 1) {
     return { text: 'Due tomorrow', isOverdue: false };
   } else {
-    return { text: `Due in ${diffDays} days`, isOverdue: false };
+    return { text: `Due in ${diffDays}d`, isOverdue: false };
   }
 }

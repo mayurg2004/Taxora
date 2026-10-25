@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  Plus,
   Calendar,
   Sparkles,
 } from 'lucide-react';
@@ -79,25 +78,17 @@ export const DashboardPage: React.FC = () => {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255, 255, 255, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.75rem', color: '#c7d2fe' }}>
             <Sparkles size={12} />
-            <span>Academic Command Center</span>
+            <span>Your personal task planner</span>
           </div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
-            Welcome back, {user?.name || 'Administrator'}! 👋
+            Welcome back, {user?.name || 'there'}! 👋
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#c7d2fe', maxWidth: '580px', lineHeight: 1.5 }}>
-            Today is <strong>{currentDateFormatted}</strong>. You have <strong>{stats.pending} pending</strong> and <strong>{stats.overdue} overdue</strong> assignments that require your attention.
+            Today is <strong>{currentDateFormatted}</strong>. You have <strong>{stats.pending + stats.inProgress} tasks left</strong>, including <strong>{stats.overdue} overdue</strong> that need attention.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link
-            to="/assignments/new"
-            className="btn"
-            style={{ backgroundColor: '#ffffff', color: '#312e81', fontWeight: 600 }}
-          >
-            <Plus size={16} />
-            <span>Add Assignment</span>
-          </Link>
           <Link
             to="/assignments"
             className="btn"
@@ -120,28 +111,28 @@ export const DashboardPage: React.FC = () => {
 
         <div className="stats-grid">
           <StatCard
-            label="Total Assignments"
+            label="All tasks"
             value={stats.total}
-            subtitle="All registered coursework"
+            subtitle="Everything on your list"
             icon={<CheckSquare size={22} />}
             variant="primary"
           />
           <StatCard
-            label="Pending Tasks"
-            value={stats.pending}
-            subtitle="Awaiting completion"
+            label="Tasks left"
+            value={stats.pending + stats.inProgress}
+            subtitle={`${stats.pending} not started · ${stats.inProgress} in progress`}
             icon={<Clock size={22} />}
             variant="warning"
           />
           <StatCard
-            label="Completed Work"
+            label="Completed"
             value={stats.completed}
-            subtitle="Successfully submitted"
+            subtitle="Done and checked off"
             icon={<CheckCircle2 size={22} />}
             variant="success"
           />
           <StatCard
-            label="Overdue Deadlines"
+            label="Overdue"
             value={stats.overdue}
             subtitle={stats.overdue > 0 ? 'Requires immediate action' : 'Great! Nothing overdue'}
             icon={<AlertTriangle size={22} />}
@@ -155,10 +146,10 @@ export const DashboardPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <div>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)' }}>
-              Overall Coursework Completion
+              Your progress
             </h3>
             <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>
-              {stats.completed} of {stats.total} total assignments completed
+              {stats.completed} of {stats.total} tasks completed
             </span>
           </div>
           <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-600)' }}>
@@ -186,8 +177,8 @@ export const DashboardPage: React.FC = () => {
         <div className="card">
           <div className="card-header">
             <div>
-              <h3 className="card-title">Upcoming Deadlines</h3>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Assignments due next</span>
+              <h3 className="card-title">Coming up</h3>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Overdue tasks first, then what is due soon</span>
             </div>
             <Link to="/assignments" className="btn btn-ghost btn-sm" style={{ color: 'var(--primary-600)', fontSize: '0.8rem' }}>
               <span>View All</span>
@@ -197,7 +188,7 @@ export const DashboardPage: React.FC = () => {
 
           {stats.upcomingDeadlines.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              No upcoming pending assignments! Everything is clear.
+              No upcoming tasks. Enjoy the breathing room.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -244,6 +235,7 @@ export const DashboardPage: React.FC = () => {
                         </span>
                       </div>
                     </div>
+                    {overdue && <StatusBadge status={item.status} isOverdue />}
                     <PriorityBadge priority={item.priority} />
                   </div>
                 );
@@ -257,7 +249,7 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <div>
               <h3 className="card-title">Recent Activity</h3>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Latest added assignments</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Recently added to your list</span>
             </div>
             <Link to="/assignments" className="btn btn-ghost btn-sm" style={{ color: 'var(--primary-600)', fontSize: '0.8rem' }}>
               <span>Manage</span>
@@ -267,7 +259,7 @@ export const DashboardPage: React.FC = () => {
 
           {stats.recentAssignments.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              No assignments recorded yet. Click 'Add Assignment' to get started!
+              No tasks yet. Add your first to-do to get started.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

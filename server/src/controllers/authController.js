@@ -68,6 +68,31 @@ export async function login(req, res, next) {
   }
 }
 
+export async function register(req, res, next) {
+  try {
+    const { name, email, password } = req.body;
+    if (!name?.trim() || !email?.trim() || !password) {
+      return res.status(400).json({ success: false, message: 'Name, email, and password are required.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
+    }
+    const normalizedEmail = email.toLowerCase().trim();
+    if (await User.findOne({ email: normalizedEmail })) {
+      return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
+    }
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, password, role: 'student' });
+    res.status(201).json({
+      success: true,
+      token: generateToken(user._id),
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    if (err.code === 11000) return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
+    next(err);
+  }
+}
+
 /**
  * @route   GET /api/auth/me
  * @desc    Get currently authenticated administrator profile

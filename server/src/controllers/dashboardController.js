@@ -15,20 +15,22 @@ export async function getDashboardStats(req, res, next) {
     const now = new Date();
 
     // 1. Total assignments count
-    const total = await Assignment.countDocuments();
+    const userFilter = { user: req.user._id };
+    const total = await Assignment.countDocuments(userFilter);
 
     // 2. Pending assignments count
-    const pending = await Assignment.countDocuments({ status: 'Pending' });
+    const pending = await Assignment.countDocuments({ ...userFilter, status: 'Pending' });
 
     // 3. In Progress assignments count
-    const inProgress = await Assignment.countDocuments({ status: 'In Progress' });
+    const inProgress = await Assignment.countDocuments({ ...userFilter, status: 'In Progress' });
 
     // 4. Completed assignments count
-    const completed = await Assignment.countDocuments({ status: 'Completed' });
+    const completed = await Assignment.countDocuments({ ...userFilter, status: 'Completed' });
 
     // 5. Overdue assignments count:
     // Defined as due date passed (< now) AND status is NOT 'Completed'
     const overdue = await Assignment.countDocuments({
+      ...userFilter,
       status: { $ne: 'Completed' },
       dueDate: { $lt: now },
     });
@@ -38,17 +40,17 @@ export async function getDashboardStats(req, res, next) {
     const completionPercentage = total === 0 ? 0 : Math.round((completed / total) * 100);
 
     // 7. Upcoming deadlines:
-    // Pending or In Progress assignments whose deadlines are in the future
+    // Surface the nearest open work, including overdue items, at the top.
     const upcomingDeadlines = await Assignment.find({
+      ...userFilter,
       status: { $in: ['Pending', 'In Progress'] },
-      dueDate: { $gte: now },
     })
       .sort({ dueDate: 1 })
       .limit(5);
 
     // 8. Recent assignments:
     // Latest 5 assignments added to the system
-    const recentAssignments = await Assignment.find()
+    const recentAssignments = await Assignment.find(userFilter)
       .sort({ createdAt: -1 })
       .limit(5);
 

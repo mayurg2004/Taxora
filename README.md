@@ -1,6 +1,6 @@
-# Taskora — Student Assignment Tracker
+# Taskora — Personal Task Planner
 
-Taskora is a modern, student-centric academic coursework and assignment tracking platform built using the MERN stack (MongoDB, Express.js, React with TypeScript, Node.js). Designed with a clean SaaS aesthetic inspired by Linear and Notion, Taskora eliminates the stress of missed deadlines by categorizing coursework by subject, tracking due dates, calculating real-time completion statistics, and flagging overdue assignments.
+Taskora is a personal day-to-day task planner built with MongoDB, Express.js, React with TypeScript, and Node.js. Create an account, add tasks with due dates and times, group them with your own categories, and see what remains, what is coming up, and what is overdue. Each account sees and manages only its own tasks.
 
 ---
 
@@ -12,7 +12,7 @@ Taskora is a modern, student-centric academic coursework and assignment tracking
 4. [Installation & Setup Guide](#4-installation--setup-guide)
 5. [Environment Variables Configuration](#5-environment-variables-configuration)
 6. [Database Configuration (Local, Atlas & Zero-Config In-Memory)](#6-database-configuration)
-7. [Administrator Access & Seeding](#7-administrator-access--seeding)
+7. [Accounts](#7-accounts)
 8. [Running the Application](#8-running-the-application)
 9. [REST API Documentation](#9-rest-api-documentation)
 10. [Automated & Manual Testing](#10-automated--manual-testing)
@@ -25,18 +25,18 @@ Taskora is a modern, student-centric academic coursework and assignment tracking
 
 ## 1. Project Overview & Key Features
 
-### Core Student Capabilities:
-- **Dashboard Overview**: Instant breakdown of total, pending, in-progress, completed, and overdue assignments with dynamic progress bars.
-- **Subject Organization**: Academic subjects (e.g., Web Technologies, Data Structures, DBMS) with active coursework counters and safe deletion checks.
-- **Assignment Management**:
-  - Create, view, edit, and delete coursework items.
-  - Multi-parameter filtering (by Subject, Status, Priority).
-  - Instant client-side search by title, subject, or description notes.
+### Core User Capabilities:
+- **Personal dashboard**: At-a-glance totals for tasks left, completed work, and overdue tasks, with overdue items shown first.
+- **Task management**:
+  - Create, view, edit, and delete personal to-dos.
+  - Add a due date and time, category, priority, and notes.
+  - Filter by category, status, and priority.
+  - Instant search by task name, category, or notes.
   - Due date sorting (earliest first, latest first, priority order, title A-Z).
   - Quick status toggles (Mark Done / In Progress / Pending) directly from cards or tables.
   - Overdue detection based on exact calendar due dates.
 - **Dual View Modes**: Switch seamlessly between interactive card view and structured data table view.
-- **Security & Authorization**: Protected administrator routes backed by JSON Web Tokens (JWT) and `bcryptjs` password hashing.
+- **Private accounts**: Self-service sign-up and sign-in with JSON Web Tokens (JWT), bcrypt password hashing, and per-user task ownership.
 
 ---
 
@@ -87,7 +87,7 @@ Hack/
 │   │   ├── middleware/         # authMiddleware (JWT protect), errorMiddleware (central 404 & errors)
 │   │   ├── models/             # User.js, Subject.js, Assignment.js (Mongoose schemas)
 │   │   ├── routes/             # authRoutes, assignmentRoutes, subjectRoutes, dashboardRoutes
-│   │   ├── utils/              # seedData.js (Idempotent seed script for admin, subjects, assignments)
+│   │   ├── utils/              # Shared backend utilities
 │   │   ├── app.js              # Express app instance (CORS, parsers, routes, error handlers)
 │   │   └── server.js           # HTTP listener on port 5000
 │   ├── tests/                  # Automated integration tests (Supertest + Jest)
@@ -154,10 +154,6 @@ JWT_EXPIRES_IN=7d
 # CORS Allowed Origin (Client URL)
 CLIENT_URL=http://localhost:5173
 
-# Seed Administrator Credentials
-ADMIN_NAME=Admin User
-ADMIN_EMAIL=admin@taskora.local
-ADMIN_PASSWORD=AdminTaskora123!
 ```
 
 ### Client Configuration (`client/.env`)
@@ -192,20 +188,9 @@ Taskora supports 3 database modes with **zero friction during viva presentations
 
 ---
 
-## 7. Administrator Access & Seeding
+## 7. Accounts
 
-For academic evaluation and security integrity, Taskora does not expose a public administrator registration endpoint. Instead, an administrator is seeded using the idempotent seed script.
-
-### Default Seed Credentials:
-- **Email**: `admin@taskora.local`
-- **Password**: `AdminTaskora123!`
-
-### Running the Seed Script Manually:
-```bash
-npm run seed
-# or: cd server && npm run seed
-```
-> **Idempotent Guarantee**: Running the seed command multiple times will **never** duplicate records. If the admin user or subjects already exist, they are preserved.
+Taskora does not create demo users or sample tasks when the server starts. Open the app and create an account from the sign-in screen. Tasks belong to the account that created them.
 
 ---
 
@@ -233,7 +218,7 @@ cd client
 npm run dev
 ```
 
-Open your browser and navigate to `http://localhost:5173`. Log in using `admin@taskora.local` / `AdminTaskora123!`.
+Open your browser and navigate to `http://localhost:5173`. Create a personal account to get started, or sign in to an existing account.
 
 ---
 
@@ -290,7 +275,7 @@ npm test
 - **Dashboard Calculations**: Total calculation, pending/completed counting, overdue detection (`dueDate < now && status != 'Completed'`), completion percentage calculation with zero-assignment safety.
 
 ### Manual Testing Checklist for Evaluation:
-1. **Login**: Navigate to `/login`. Verify error message when typing incorrect credentials. Log in with `admin@taskora.local` / `AdminTaskora123!`.
+1. **Account**: Navigate to `/login` and create an account, then sign in.
 2. **Dashboard**: Verify that the stat cards (Total, Pending, Completed, Overdue) and progress bar match the actual number of assignments.
 3. **Add Assignment**: Click "New Assignment". Submit an empty form to observe field-specific validation. Add an assignment with tomorrow's date.
 4. **Search & Filters**: Go to `/assignments`. Type part of your assignment title in the search bar. Filter by Subject and Priority.
@@ -368,6 +353,6 @@ The output is generated in `client/dist/` with bundled JavaScript, CSS, and HTML
 
 ## 14. Known Limitations & Future Enhancements
 
-- **Single Administrator Scope**: By specification, this project implements an administrator-managed academic assignment registry. Multi-tenant student accounts with personal role isolation can be added by introducing a `studentId` foreign key on assignments.
+- **Reminders**: Tasks are shown as overdue in the app, but notifications and email reminders are not yet implemented.
 - **Calendar View**: The current interface offers Grid Card and Table Views. A monthly calendar visualizer would be an attractive future addition.
 - **Email Reminders**: Adding automated NodeMailer email alerts 24 hours prior to deadline expirations.

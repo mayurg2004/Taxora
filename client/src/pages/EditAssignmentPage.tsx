@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AssignmentForm } from '../components/assignments/AssignmentForm';
-import { Subject, AssignmentFormData, Assignment } from '../types';
-import { subjectsApi, assignmentsApi } from '../services/api';
+import { AssignmentFormData, Assignment } from '../types';
+import { assignmentsApi } from '../services/api';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorMessage } from '../components/common/ErrorMessage';
 
@@ -11,7 +11,6 @@ export const EditAssignmentPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [assignment, setAssignment] = useState<Assignment | null>(null);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,14 +19,10 @@ export const EditAssignmentPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [assignRes, subRes] = await Promise.all([
-        assignmentsApi.getById(id),
-        subjectsApi.getAll(),
-      ]);
+      const assignRes = await assignmentsApi.getById(id);
       setAssignment(assignRes.assignment);
-      setSubjects(subRes.subjects);
     } catch (err: any) {
-      setError(err.message || 'Failed to load assignment details.');
+      setError(err.message || 'Failed to load task details.');
     } finally {
       setLoading(false);
     }
@@ -43,14 +38,14 @@ export const EditAssignmentPage: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Loading assignment for editing..." />;
+    return <LoadingSpinner message="Loading task for editing..." />;
   }
 
   if (error || !assignment) {
     return (
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
         <ErrorMessage
-          message={error || 'Assignment not found.'}
+          message={error || 'Task not found.'}
           onRetry={loadData}
         />
         <button
@@ -58,7 +53,7 @@ export const EditAssignmentPage: React.FC = () => {
           className="btn btn-secondary"
           style={{ marginTop: '1rem' }}
         >
-          Return to Assignments
+          Return to my tasks
         </button>
       </div>
     );
@@ -77,7 +72,6 @@ export const EditAssignmentPage: React.FC = () => {
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <AssignmentForm
         initialData={initialFormData}
-        subjects={subjects}
         isEditing={true}
         onSubmit={handleUpdateAssignment}
       />

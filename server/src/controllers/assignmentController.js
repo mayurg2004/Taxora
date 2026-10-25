@@ -15,7 +15,7 @@ export async function getAssignments(req, res, next) {
   try {
     const { search, subject, status, priority, sort } = req.query;
 
-    const filter = {};
+    const filter = { user: req.user._id };
 
     // Text search on title, subject, or description
     if (search && search.trim() !== '') {
@@ -89,7 +89,7 @@ export async function getAssignments(req, res, next) {
  */
 export async function getAssignmentById(req, res, next) {
   try {
-    const assignment = await Assignment.findById(req.params.id);
+    const assignment = await Assignment.findOne({ _id: req.params.id, user: req.user._id });
     if (!assignment) {
       return res.status(404).json({
         success: false,
@@ -123,13 +123,6 @@ export async function createAssignment(req, res, next) {
       });
     }
 
-    if (!subject || !subject.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Subject is required.',
-      });
-    }
-
     if (!dueDate) {
       return res.status(400).json({
         success: false,
@@ -144,10 +137,17 @@ export async function createAssignment(req, res, next) {
         message: 'Invalid due date format.',
       });
     }
+    if (parsedDueDate.getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Due date and time must be now or in the future.',
+      });
+    }
 
     const assignment = await Assignment.create({
       title: title.trim(),
-      subject: subject.trim(),
+      subject: subject ? subject.trim() : 'Personal',
+      user: req.user._id,
       description: description ? description.trim() : '',
       dueDate: parsedDueDate,
       priority: priority || 'Medium',
@@ -173,7 +173,7 @@ export async function updateAssignment(req, res, next) {
   try {
     const { title, subject, description, dueDate, priority, status } = req.body;
 
-    const assignment = await Assignment.findById(req.params.id);
+    const assignment = await Assignment.findOne({ _id: req.params.id, user: req.user._id });
     if (!assignment) {
       return res.status(404).json({
         success: false,
@@ -181,10 +181,19 @@ export async function updateAssignment(req, res, next) {
       });
     }
 
+    if (dueDate !== undefined) {
+      const parsedDueDate = new Date(dueDate);
+      if (isNaN(parsedDueDate.getTime())) {
+        return res.status(400).json({ success: false, message: 'Invalid due date format.' });
+      }
+      if (parsedDueDate.getTime() < Date.now() && parsedDueDate.getTime() !== assignment.dueDate.getTime()) {
+        return res.status(400).json({ success: false, message: 'Due date and time must be now or in the future.' });
+      }
+      assignment.dueDate = parsedDueDate;
+    }
     if (title !== undefined) assignment.title = title.trim();
     if (subject !== undefined) assignment.subject = subject.trim();
     if (description !== undefined) assignment.description = description.trim();
-    if (dueDate !== undefined) assignment.dueDate = new Date(dueDate);
     if (priority !== undefined) assignment.priority = priority;
     if (status !== undefined) assignment.status = status;
 
@@ -216,7 +225,7 @@ export async function updateAssignmentStatus(req, res, next) {
       });
     }
 
-    const assignment = await Assignment.findById(req.params.id);
+    const assignment = await Assignment.findOne({ _id: req.params.id, user: req.user._id });
     if (!assignment) {
       return res.status(404).json({
         success: false,
@@ -244,7 +253,7 @@ export async function updateAssignmentStatus(req, res, next) {
  */
 export async function deleteAssignment(req, res, next) {
   try {
-    const assignment = await Assignment.findById(req.params.id);
+    const assignment = await Assignment.findOne({ _id: req.params.id, user: req.user._id });
     if (!assignment) {
       return res.status(404).json({
         success: false,
@@ -252,7 +261,7 @@ export async function deleteAssignment(req, res, next) {
       });
     }
 
-    await Assignment.findByIdAndDelete(req.params.id);
+    await Assignment.deleteOne({ _id: req.params.id, user: req.user._id });
 
     res.status(200).json({
       success: true,

@@ -7,6 +7,11 @@ import { Assignment, AssignmentFormData, Subject, DashboardStats, User, AuthResp
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+function withUtcDueDate<T extends { dueDate?: string }>(data: T): T {
+  if (!data.dueDate) return data;
+  return { ...data, dueDate: new Date(data.dueDate).toISOString() };
+}
+
 /**
  * Retrieves the stored JWT authentication token from localStorage
  */
@@ -79,6 +84,9 @@ export const authApi = {
       body: JSON.stringify(credentials),
     }),
 
+  register: (data: { name: string; email: string; password: string }): Promise<AuthResponse> =>
+    request<AuthResponse>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
+
   getMe: (): Promise<{ user: User }> =>
     request<{ user: User }>('/auth/me'),
 };
@@ -105,13 +113,13 @@ export const assignmentsApi = {
   create: (data: AssignmentFormData): Promise<{ assignment: Assignment; message: string }> =>
     request<{ assignment: Assignment; message: string }>('/assignments', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(withUtcDueDate(data)),
     }),
 
   update: (id: string, data: Partial<AssignmentFormData>): Promise<{ assignment: Assignment; message: string }> =>
     request<{ assignment: Assignment; message: string }>(`/assignments/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify(withUtcDueDate(data)),
     }),
 
   updateStatus: (id: string, status: string): Promise<{ assignment: Assignment; message: string }> =>

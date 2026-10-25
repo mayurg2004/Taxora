@@ -50,6 +50,8 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface RegistrationData { name: string; email: string; password: string }
+
 export interface DashboardStats {
   total: number;
   pending: number;
