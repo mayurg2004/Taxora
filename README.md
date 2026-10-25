@@ -338,16 +338,20 @@ npm run build:client
 ```
 The output is generated in `client/dist/` with bundled JavaScript, CSS, and HTML.
 
-### Deploying on Modern Platforms:
-- **Render / Railway / Heroku**:
-  - Root directory contains `package.json` with standard build scripts.
-  - Set Environment Variables: `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, `NODE_ENV=production`.
-  - Start command: `node server/src/server.js`.
-- **Vercel / Netlify (Frontend)**:
-  - Root Directory: `client`
-  - Build Command: `npm run build`
-  - Output Directory: `dist`
-  - Set `VITE_API_URL` to your production backend URL.
+### MongoDB Atlas + Render API + Vercel frontend
+
+1. In Atlas, create a database user and cluster. Add the backend host's outbound addresses to the project's IP access list. Use `0.0.0.0/0` only if the host has dynamic outbound IPs and no narrower option is available; protect the database with a strong database-user password.
+2. In Atlas, choose **Connect → Drivers**, copy the connection string, replace `<db_password>` with the database user's password (URL-encode special characters), and add a database name such as `taskora`.
+3. Deploy the API as a Render Web Service from this repository. Set **Root Directory** to `server`, **Build Command** to `npm install`, **Start Command** to `npm start`, and **Health Check Path** to `/api/health`.
+4. Add these Render environment variables:
+   - `NODE_ENV=production`
+   - `MONGO_URI=<Atlas connection string>`
+   - `JWT_SECRET=<random secret of at least 32 characters>`
+   - `CLIENT_URL=<deployed frontend URL>`
+5. Deploy the frontend to Vercel with **Root Directory** `client`, **Build Command** `npm run build`, and **Output Directory** `dist`. Add `VITE_API_URL=<Render API URL>/api`, then redeploy.
+6. Once both are deployed, open the frontend URL and create an account. The API refuses production startup without `MONGO_URI`, `JWT_SECRET`, and `CLIENT_URL`; it does not use the temporary development database in production.
+
+Keep Atlas and JWT credentials in the hosting provider's environment settings. Do not commit them into `.env` files or source control.
 
 ---
 

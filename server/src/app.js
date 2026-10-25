@@ -19,13 +19,19 @@ import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 const app = express();
 
 // Configure CORS for local development and production origin
-const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, or Postman)
       if (!origin) return callback(null, true);
-      if (origin === allowedOrigin || origin.startsWith('http://localhost:')) {
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      if (process.env.NODE_ENV !== 'production' && /^http:\/\/localhost:\d+$/.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error('CORS policy: This origin is not allowed'));

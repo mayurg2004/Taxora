@@ -10,7 +10,8 @@ import { User } from '../models/User.js';
  * Generates a signed JWT for the given user ID
  */
 function generateToken(id) {
-  const secret = process.env.JWT_SECRET || 'taskora_development_jwt_secret_key_change_in_production_123456';
+  const secret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'taskora_development_jwt_secret_key_change_in_production_123456');
+  if (!secret) throw new Error('JWT_SECRET must be configured in production.');
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   return jwt.sign({ id }, secret, { expiresIn });
 }

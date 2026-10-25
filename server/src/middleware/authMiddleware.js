@@ -25,7 +25,8 @@ export async function protect(req, res, next) {
   }
 
   try {
-    const secret = process.env.JWT_SECRET || 'taskora_development_jwt_secret_key_change_in_production_123456';
+    const secret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'taskora_development_jwt_secret_key_change_in_production_123456');
+    if (!secret) throw new Error('JWT_SECRET must be configured in production.');
     const decoded = jwt.verify(token, secret);
 
     // Attach user information to request object (excluding password hash)
